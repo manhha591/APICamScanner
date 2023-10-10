@@ -5,6 +5,6 @@
         public int    groupId   { get; set; }
         public string groupName { get; set; }
         public string groupDate { get; set; }
-        public int    userId    { get; set; }
+        public int    dataTypeId    { get; set; }
     }
 }
