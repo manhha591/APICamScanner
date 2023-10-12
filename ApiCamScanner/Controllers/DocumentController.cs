@@ -29,12 +29,13 @@ namespace ApiCamScanner.Controllers
                     mySqlConnection.Open();
 
                     // Tạo câu lệnh SQL với tham số được thay thế
-                    string insertDocument = "INSERT INTO documents (documentName, userId) VALUES (@documentName, @userId); SELECT LAST_INSERT_ID()";
+                    string insertDocument = "INSERT INTO documents (documentName, userId, date) VALUES (@documentName, @userId, @date); SELECT LAST_INSERT_ID()";
 
                     // Tạo đối tượng DynamicParameters và thêm tham số
                     var parameters = new DynamicParameters();
                     parameters.Add("@documentName", document.documentName);
                     parameters.Add("@userId", document.userId);
+                    parameters.Add("@date", document.date);
 
                     // Thực thi câu lệnh SQL và lấy kết quả
                     int documentId = await mySqlConnection.ExecuteScalarAsync<int>(insertDocument, parameters);

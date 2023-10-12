@@ -25,13 +25,14 @@ namespace ApiCamScanner.Controllers
 
                 var mySqlConnection = new MySqlConnection(connectionString);
 
-                string insertData = "INSERT INTO data (dataName, dataTypeId, dataValue) VALUES (@dataName, @dataTypeId, @dataValue); SELECT LAST_INSERT_ID()";
+                string insertData = "INSERT INTO data (dataName, dataTypeId, dataValue, date) VALUES (@dataName, @dataTypeId, @dataValue , @date); SELECT LAST_INSERT_ID()";
 
                 var parameters = new DynamicParameters();
                 parameters.Add("@dataName", Data.dataName);
                 parameters.Add("@dataValue", Data.dataValue);
                 parameters.Add("@dataTypeId", Data.dataTypeId);
-                
+                parameters.Add("@date", Data.date);
+
 
                 // Execute the SQL query to insert the image and retrieve the last inserted ID
                 int dataId = mySqlConnection.ExecuteScalar<int>(insertData, parameters);
@@ -105,7 +106,7 @@ namespace ApiCamScanner.Controllers
                 }
 
                 // Thực hiện cập nhật tên nhóm trong cơ sở dữ liệu
-                bool isSuccess = UpdateDataName(Data.dataId, Data.dataName);
+                bool isSuccess = UpdateDataName(Data);
                 if (isSuccess)
                 {
                     return StatusCode(StatusCodes.Status200OK, "Data updated successfully");
@@ -142,7 +143,7 @@ namespace ApiCamScanner.Controllers
             return count > 0;
         }
 
-        private bool UpdateDataName(int dataId, string dataName)
+        private bool UpdateDataName(Data data)
         {
             // Cập nhật tên nhóm trong cơ sở dữ liệu
             // Ví dụ: Sử dụng ORM (Entity Framework, Dapper) để thực hiện cập nhật trong MySQL
@@ -151,13 +152,14 @@ namespace ApiCamScanner.Controllers
 
             MySqlConnection mySqlConnection = new MySqlConnection(connectionString);
 
-            string updateGroup = "UPDATE data SET dataName = @dataName WHERE dataId = @dataId";
+            string updateDataQuery = "UPDATE data SET dataName = @dataName, dataValue = @dataValue WHERE dataId = @dataId";
 
             var parameters = new DynamicParameters();
-            parameters.Add("@dataName", dataName);
-            parameters.Add("@dataId", dataId);
+            parameters.Add("@dataName", data.dataName);
+            parameters.Add("@dataValue", data.dataValue);
+            parameters.Add("@dataId", data.dataId);
 
-            int rowsAffected = mySqlConnection.Execute(updateGroup, parameters);
+            int rowsAffected = mySqlConnection.Execute(updateDataQuery, parameters);
 
             return rowsAffected > 0;
         }
